@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import type { Character, Episode, Location } from "./graphql";
 
 const fetchCharacters = async () => {
   try {
@@ -38,7 +39,7 @@ const fetchLocations = async () => {
   }
 };
 
-const addCharacterToFile = async (character) => {
+const addCharacterToFile = async (character: Character) => {
   try {
     const fileContent = await fs.readFile(
       process.cwd() + "/app/api/graphql/db/Characters.json",
@@ -58,7 +59,7 @@ const addCharacterToFile = async (character) => {
   }
 };
 
-const addEpisodeToFile = async (episode) => {
+const addEpisodeToFile = async (episode: Episode) => {
   try {
     const fileContent = await fs.readFile(
       process.cwd() + "/app/api/graphql/db/Episodes.json",
@@ -79,7 +80,7 @@ const addEpisodeToFile = async (episode) => {
   }
 };
 
-const addLocationToFile = async (location) => {
+const addLocationToFile = async (location: Location) => {
   try {
     const fileContent = await fs.readFile(
       process.cwd() + "/app/api/graphql/db/Locations.json",
@@ -100,34 +101,36 @@ const addLocationToFile = async (location) => {
 
 const resolvers = {
   Query: {
-    episode: async (parent, args) => {
+    episode: async (_: {}, args: { id: string }) => {
       const episodes = await fetchEpisodes();
-      return episodes.find((episode) => episode.id === args.id);
+      return episodes.find((episode: Episode) => episode.id === args.id);
     },
     episodes: fetchEpisodes,
-    location: async (parent, args) => {
+    location: async (_: {}, args: { id: string }) => {
       const locations = await fetchLocations();
-      return locations.find((location) => location.id === args.id);
+      return locations.find((location: Location) => location.id === args.id);
     },
     locations: fetchLocations,
-    character: async (parent, args) => {
+    character: async (_: {}, args: { id: string }) => {
       const characters = await fetchCharacters();
-      return characters.find((character) => character.id === args.id);
+      return characters.find(
+        (character: Character) => character.id === args.id
+      );
     },
     characters: fetchCharacters,
   },
   Mutation: {
-    addCharacter: (parent, args) => {
+    addCharacter: (_: {}, args: Character) => {
       const data = { ...args };
       const newCharacter = addCharacterToFile(data);
       return newCharacter;
     },
-    addEpisode: (parent, args) => {
+    addEpisode: (_: {}, args: Episode) => {
       const data = { ...args };
       const newEpisode = addEpisodeToFile(data);
       return newEpisode;
     },
-    addLocation: (parent, args) => {
+    addLocation: (_: {}, args: Location) => {
       const data = { ...args };
       const newLocation = addLocationToFile(data);
       return newLocation;

@@ -7,7 +7,6 @@ const fetchCharacters = async () => {
       process.cwd() + "/app/api/graphql/db/Characters.json",
       { encoding: "utf-8" }
     );
-    console.log(JSON.parse(data).elements.length);
     return JSON.parse(data).elements;
   } catch (error) {
     console.error(error);
@@ -46,7 +45,11 @@ const addCharacterToFile = async (character: Character) => {
       { encoding: "utf-8" }
     );
     const characters = JSON.parse(fileContent).elements;
-    const newCharacter = { id: characters.length + 1, ...character };
+    const newCharacter = {
+      __typename: "Character",
+      id: (characters.length + 1).toString(),
+      ...character,
+    };
     characters.push(newCharacter);
     const newFileContent = { elements: characters };
     await fs.writeFile(
@@ -54,6 +57,7 @@ const addCharacterToFile = async (character: Character) => {
       JSON.stringify(newFileContent, null, 2),
       { encoding: "utf-8" }
     );
+    return newCharacter;
   } catch (error) {
     console.error(error);
   }
@@ -66,7 +70,11 @@ const addEpisodeToFile = async (episode: Episode) => {
       { encoding: "utf-8" }
     );
     const episodes = JSON.parse(fileContent).elements;
-    const newEpisode = { id: episodes.length + 1, ...episode };
+    const newEpisode = {
+      __typename: "Episode",
+      id: (episodes.length + 1).toString(),
+      ...episode,
+    };
     episodes.push(newEpisode);
     const newFileContent = { elements: episodes };
     await fs.writeFile(
@@ -87,13 +95,18 @@ const addLocationToFile = async (location: Location) => {
       { encoding: "utf-8" }
     );
     const locations = JSON.parse(fileContent).elements;
-    const newLocation = { id: locations.length + 1, ...location };
+    const newLocation = {
+      __typename: "Location",
+      id: (locations.length + 1).toString(),
+      ...location,
+    };
     locations.push(newLocation);
     const newFileContent = { elements: locations };
     await fs.writeFile(
       process.cwd() + "/app/api/graphql/db/Locations.json",
       JSON.stringify(newFileContent, null, 2)
     );
+    return newLocation;
   } catch (error) {
     console.error(error);
   }
@@ -121,18 +134,15 @@ const resolvers = {
   },
   Mutation: {
     addCharacter: (_: {}, args: Character) => {
-      const data = { ...args };
-      const newCharacter = addCharacterToFile(data);
+      const newCharacter = addCharacterToFile(args);
       return newCharacter;
     },
     addEpisode: (_: {}, args: Episode) => {
-      const data = { ...args };
-      const newEpisode = addEpisodeToFile(data);
+      const newEpisode = addEpisodeToFile(args);
       return newEpisode;
     },
     addLocation: (_: {}, args: Location) => {
-      const data = { ...args };
-      const newLocation = addLocationToFile(data);
+      const newLocation = addLocationToFile(args);
       return newLocation;
     },
   },

@@ -4199,17 +4199,6 @@
       "type": "",
       "gender": "Male",
       "image": "https://rickandmortyapi.com/api/character/avatar/820.jpeg"
-    },
-    {
-      "id": 421,
-      "character": {
-        "name": "Stefano",
-        "status": "Male"
-      }
-    },
-    {
-      "id": 422,
-      "name": "Stefano"
     }
   ]
 }
